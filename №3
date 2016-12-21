@@ -14,7 +14,6 @@ void QuickSort(vector<T>&v,int l,int r)
 	if (l<rr) QuickSort(v,l,rr);
 	if (ll<r) QuickSort(v,ll,r);
 }
-
 int main()
 {
 	int n;
