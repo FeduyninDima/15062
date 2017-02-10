@@ -9,15 +9,16 @@ struct node{
     node *next;
 };
 
-class stack{
+class queue{
     private:
         node *top;
+        node *end;
         int size;
     public:
-        stack(int newEl){
+        queue(int newEl){
             node *temp = new node;
             temp->elem = newEl;
-            top = temp;
+            top = end = temp;
             size = 1;
         }
         int pop(){
@@ -33,8 +34,13 @@ class stack{
         void push(int newEl){
             node *temp = new node;
             temp->elem = newEl;
-            temp->next = top;
-            top = temp;
+            if(size != 0){
+                end->next = temp;
+                end = temp;
+            }
+            else{
+                top = end = temp;
+            }
             size++;
         }
 };
@@ -43,14 +49,14 @@ class stack{
 int main()
 {
 	map <string, int> commands;			//list of commands
-	commands["stack"]=1;
+	commands["queue"]=1;
 	commands["end"]=2;
 	commands["push"]=3;
 	commands["pop"]=4;
 
 	string s;
-	stack A(0);					//creating an empty stack
-							// this zero will be popped in "stack"-case of input
+	queue A(0);					//creating an empty queue
+							// this zero will be popped in "queue"-case of input
 
 	do{						//command handler
 
@@ -60,8 +66,8 @@ int main()
 
 		switch ( commands[s] ){
 
-			case 1:				// input "stack" - creating the first element of stack:
-        						// deleting temporal zero from stack
+			case 1:				// input "queue" - creating the first element of queue:
+        						// deleting temporal zero from queue
                 		cin>>temp;		// and create first element from input
 		                A.pop();
                 		A.push(temp);
@@ -70,12 +76,12 @@ int main()
 			case 2: 			// input - "end" - ending of inputting
 				break;
 
-            		case 3:        			// input "push" - reading element for pushing to stack from input
+            		case 3:        			// input "push" - reading element for pushing to queue from input
 		                cin>>temp;
                 		A.push(temp);
 		                break;
 
-            		case 4:   		     	// input "pop" - writing popped element to output
+            		case 4:   		     	// input "pop" - writing popped from queue element to output
                 		cout<<A.pop()<<endl;
                 		break;
         	}
