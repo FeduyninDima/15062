@@ -1,0 +1,90 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+void input(int n, int arr[][2]){
+	for (int i = 0; i < n; i++){
+  for (int j = 0; j < 2; j++){
+			cin >> arr[i][j];}}}
+
+void creatadjmat(int n, int m, int arr[][2], bool **arr2){
+	for (int i = 0; i < m; i++){	
+  for (int j = 0; j < m; j++){arr2[i][j] = 0;}
+  }
+
+	for (int i = 0; i < n; i++){
+		arr2[arr[i][0] - 1][arr[i][1] - 1] = 1;
+		arr2[arr[i][1] - 1][arr[i][0] - 1] = 1;}
+ }
+
+void coutadjmat(int n, bool **arr){
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){cout << arr[i][j] << " ";}
+		cout << endl;
+	}
+}
+
+void creatadjlist(int m, vector<vector<int> >& adj_list, int arr[][2]){
+	for (int i = 0; i < m; i++){
+		adj_list[arr[i][0] - 1].push_back(arr[i][1]);
+		adj_list[arr[i][1] - 1].push_back(arr[i][0]);
+	}
+}
+
+void coutadjlist(vector<vector<int> >& adj_list){
+	for (vector<vector<int> >::iterator it = adj_list.begin(); it != adj_list.end(); ++it){
+		for (vector<int>::iterator it2 = (*it).begin(); it2 != (*it).end(); ++it2){cout << *it2 << " ";}
+		cout << endl;
+	}
+}
+
+void creatincmat(int n, int m, int arr[][2], bool **arr2){
+  for (int i = 0; i < n; i++){
+		for (int j = 0; j < m; j++){arr2[i][j] = 0;}
+	}
+
+	for (int i = 0; i < m; i++){
+		arr2[arr[i][0] - 1][i] = 1;
+		arr2[arr[i][1] - 1][i] = 1;
+	}
+}
+
+void coutincmat(int n, int m, bool **arr){
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < m; j++){cout << arr[i][j] << " ";}cout << endl;}
+}
+
+int main(){
+	int NumOfVer;
+	int NumRibs;
+	cin >> NumOfVer;
+	cin >> NumRibs;
+
+	vector<vector<int> > AdjaList(NumOfVer);
+	int EdgeList[NumRibs][2];
+	bool **AdjMat = new bool*[NumOfVer];
+	bool **IncMat = new bool*[NumOfVer];
+
+	for (int i = 0; i < NumOfVer; i++){
+		AdjMat[i] = new bool[NumOfVer];}
+
+	for (int i = 0; i < NumOfVer; i++){
+		IncMat[i] = new bool[NumRibs];}
+
+	input(NumRibs, EdgeList);
+
+	creatadjmat(NumRibs, NumOfVer, EdgeList, AdjMat);
+	coutadjmat(NumOfVer, AdjMat);
+
+	creatadjlist(NumOfVer, AdjaList, EdgeList);
+	coutadjlist(AdjaList);
+
+	creatincmat(NumOfVer, NumRibs, EdgeList, IncMat);
+	coutincmat(NumOfVer, NumRibs, IncMat);
+
+	for (int i = 0; i < NumOfVer; i++){
+		delete[] AdjMat[i];}
+
+	for (int i = 0; i < NumOfVer; i++){
+		delete[] IncMat[i];}
+
+	return 0;
