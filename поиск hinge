@@ -1,0 +1,226 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int timer = 0;
+int timer2 = 0;
+
+void find_cut_vertex(vector<int>& vertex,vector<vector<int> >& arr, int n, int start, bool used[],int time[], int up[],int p = -1)
+{
+    used[start] = 1;//timeIn fUp
+    time[start] = timer++;
+    up[start] = timer++;
+    int sons = 0;
+
+    for(int i = 0; i < arr[start].size(); i++)
+    {
+        int to = arr[start][i];
+        if(to == p)
+        {
+            continue;
+        }
+        if(used[to])
+        {
+            up[start] = min(up[start],time[to]);
+        }
+        else
+        {
+            find_cut_vertex(vertex,arr,n,to,used,time,up,start);
+            up[start] = min(up[start], up[to]);
+            if(up[to] >= time[start] && p!=-1)
+            {
+                int check = 0;
+                for(int i = 0; i < vertex.size(); i++)
+                {
+                    if(start == vertex[i])
+                    {
+                        check++;
+                    }
+
+                }
+                if(check == 0)
+                {
+                    vertex.push_back(start);
+                }
+            }
+            sons++;
+        }
+    }
+    if(p == -1 && sons > 1)
+    {
+        int check2 = 0;
+                for(int i = 0; i < vertex.size(); i++)
+                {
+                    if(start == vertex[i])
+                    {
+                        check2++;
+                    }
+
+                }
+                if(check2 == 0)
+                {
+                    vertex.push_back(start);
+                }
+    }
+}
+
+void create_adjacency_matrix(int n, int m, int arr[][2], bool **arr2)
+{
+    for(int i =0; i < m; i++)
+    {
+        for(int j = 0; j < m; j++)
+        {
+            arr2[i][j] = 0;
+        }
+    }
+
+    for(int i = 0; i < n; i++)
+    {
+        arr2[arr[i][0]-1][arr[i][1]-1] = 1;
+        arr2[arr[i][1]-1][arr[i][0]-1] = 1;
+    }
+}
+
+void create_adjacency_list(int m, vector<vector<int> >& adj_list, int arr[][2])
+{
+    for(int i = 0; i <= m; i++)
+    {
+        adj_list[arr[i][0]].push_back(arr[i][1]);
+        adj_list[arr[i][1]].push_back(arr[i][0]);
+    }
+}
+
+void input(int n,int arr[][2])
+{
+    for(int i = 0; i < n; i++)
+    {
+        for(int j = 0; j < 2; j++)
+        {
+            cin >> arr[i][j];
+        }
+    }
+}
+
+void cout_adjacency_list(vector<vector<int> >& adj_list)
+{
+    for(vector<vector<int> >::iterator it = adj_list.begin(); it != adj_list.end(); it++)
+    {
+        for(vector<int>::iterator it2 = (*it).begin(); it2 != (*it).end(); it2++)
+        {
+            cout << *it2 << " ";
+        }
+        cout << endl;
+    }
+}
+
+void find_bridges(vector<int>& bridge,vector<vector<int> >& arr, int n, int start, bool used2[],int time[], int up[],int p = -1)
+{
+    used2[start] = 1;
+    time[start] = timer2++;
+    up[start] = timer2++;
+    for(int i = 0; i < arr[start].size(); i++)
+    {
+        int to = arr[start][i];
+        if(to == p)
+        {
+            continue;
+        }
+
+        if(used2[to])
+        {
+            up[start] = min(up[start], time[to]);
+        }
+        else
+        {
+            find_bridges(bridge,arr,n,to,used2,time,up,start);
+            up[start] = min(up[start],up[to]);
+            if(up[to]>time[start])
+            {
+                bridge.push_back(start);
+                bridge.push_back(to);
+            }
+        }
+    }
+}
+
+int main()
+{
+    int NumberOfVerticies;
+    int NumberOfRibs;
+    vector<int> cutVertex;
+    vector<int> bridge;
+
+    cin >> NumberOfVerticies;
+    cin >> NumberOfRibs;
+
+    vector<vector<int> > AdjacencyList(NumberOfVerticies);
+    int EdgeList[NumberOfRibs][2];
+    int start = 0;
+
+    input(NumberOfRibs, EdgeList);
+
+    create_adjacency_list(NumberOfVerticies, AdjacencyList, EdgeList);
+
+    bool **AdjacencyMatrix = new bool*[NumberOfVerticies];
+
+    bool used[NumberOfVerticies];//Массив для поиска шарниров
+    bool used2[NumberOfVerticies];//Массив для поиска мостов
+    int timeIn[NumberOfVerticies];
+    int fUp[NumberOfVerticies];
+    int timeIn2[NumberOfVerticies];
+    int fUp2[NumberOfVerticies];
+    for(int i = 0; i < NumberOfVerticies; i++)
+    {
+        used[i] = 0;
+    }
+
+
+    for(int i = 0; i < NumberOfVerticies; i++)
+    {
+        AdjacencyMatrix[i] = new bool[NumberOfVerticies];
+    }
+    create_adjacency_list(NumberOfVerticies, AdjacencyList, EdgeList);
+
+    timer = 0;
+    timer2 = 0;
+    find_cut_vertex(cutVertex,AdjacencyList, NumberOfVerticies, start, used, timeIn, fUp);
+
+    for(int i = 0; i < NumberOfVerticies; i++)
+    {
+        used2[i] = 0;
+    }
+
+    for(int i = 0; i < NumberOfVerticies; i++)
+    {
+        if(!used2[i])
+        {
+            find_bridges(bridge,AdjacencyList,NumberOfVerticies,i,used2,timeIn2,fUp2);
+        }
+    }
+    for(int i = 0; i<cutVertex.size(); i++)
+    {
+        for(int i = 0; i < cutVertex.size(); i++)
+        {
+            int check = 0;
+            for(int j  = 0; j < bridge.size(); j++)
+            {
+                if(cutVertex[i] == bridge[j])
+                {
+                    check++;
+                }
+
+            }
+            if(check == 0)
+            {
+                cout << cutVertex[i];
+            }
+        }
+    }
+
+    for (int i = 0; i < NumberOfVerticies; i++)
+    {
+        delete[] AdjacencyMatrix[i];
+    }
+    return 0;
+}
